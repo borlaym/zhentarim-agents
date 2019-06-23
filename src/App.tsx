@@ -3,6 +3,7 @@ import './App.css';
 import shuffle from './shuffle';
 import * as uuid from 'uuid';
 import classnames from 'classnames'
+import { converted, tooFarAway, nextTo, closeBy, change } from './information';
 
 const NUMBER_OF_GUESTS = 25;
 const NUMBER_OF_AGENTS = 2;
@@ -134,6 +135,9 @@ class App extends React.Component<{}, State> {
 			return !!occupiedSpaces.find(space => space.equals(pos));
 		}
 		const newTurn = currentTurn.map((guest: Guest, index, arr) => {
+			if (guest.type !== 'agent' && Math.random() < 0.5) {
+				return guest;
+			}
 			const oldPosition = guest.position;
 			const possiblePositions = [
 				oldPosition.copy(-1, -1), oldPosition.copy(-1, 0), oldPosition.copy(-1, 1),
@@ -167,7 +171,8 @@ class App extends React.Component<{}, State> {
 		})
 		this.setState({
 			turns: [...this.state.turns, newTurn],
-			selected: undefined
+			selected: undefined,
+			information: []
 		})
 	}
 	select = (guest: Guest) => {
@@ -191,24 +196,24 @@ class App extends React.Component<{}, State> {
 		let info = 'No info';
 		const random = Math.random() * 100;
 		if (guest.converted) {
-			info = 'I\'m not telling you anything. They promised me good coin.';
-		} else if (this.state.turns.length === 1 || random < 40) {
+			info = converted();
+		} else if (this.state.turns.length === 1 || random < 60) {
 			// Distance to agent
 			const agents = currentTurn.filter(guest => guest.type === 'agent');
 			const distances = agents.map(agent => guest.position.distanceTo(agent.position))
 			const targetAgentDistance = Math.max(Math.min(...distances), 0)
 			if (targetAgentDistance > 3) {
-				info = 'Zhentarim? Never heard of them.'
+				info = tooFarAway()
 			} else if (targetAgentDistance < 2 && guest.position.neighboring(currentTurn) > 1 ) {
-				info = 'This guy next to me is super suspicious!'
+				info = nextTo()
 			} else {
-				info = 'I think I saw a man with a snake tattoo not too far away!'
+				info = closeBy()
 			}
 		} else {
 			const previousRound = this.state.turns[this.state.turns.length -2];
 			const agents = previousRound.filter(guest => guest.type === 'agent');
 			const targetAgent = shuffle(agents)[0]
-			info = `I saw a suspicious man change from a ${targetAgent.mask} mask not too long ago!`;
+			info = change(targetAgent.mask)
 		}
 		this.setState({
 			information: [...this.state.information, {
