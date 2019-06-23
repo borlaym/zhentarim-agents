@@ -182,7 +182,11 @@ class App extends React.Component<{}, State> {
 			return;
 		}
 		if (insightSuccess && guest.type === 'agent') {
-			return alert('Found agent')
+			alert('Eeek! I\'m compromised!');
+			return this.setState({
+				turns: [...this.state.turns.slice(0, this.state.turns.length - 1),
+					this.state.turns[this.state.turns.length - 1].filter(g => g !== guest)]
+			})
 		}
 		let info = 'No info';
 		const random = Math.random() * 100;
