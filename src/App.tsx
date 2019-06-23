@@ -41,6 +41,9 @@ class Position {
 	distanceTo(pos: Position): number {
 		return Math.max(Math.abs(pos.row - this.row), Math.abs(pos.col - this.col))
 	}
+	neighboring(guests: Turn): number {
+		return guests.filter(guest => this.distanceTo(guest.position) === 1).length;
+	}
 
 }
 
@@ -192,7 +195,7 @@ class App extends React.Component<{}, State> {
 			const targetAgentDistance = Math.max(Math.min(...distances), 0)
 			if (targetAgentDistance > 3) {
 				info = 'Zhentarim? Never heard of them.'
-			} else if (targetAgentDistance < 2) {
+			} else if (targetAgentDistance < 2 && guest.position.neighboring(currentTurn) > 1 ) {
 				info = 'This guy next to me is super suspicious!'
 			} else {
 				info = 'I think I saw a man with a snake tattoo not too far away!'
