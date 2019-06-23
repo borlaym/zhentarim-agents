@@ -10,3 +10,7 @@ td {
 td.selected {
 	border: 1px solid red;
 }
+
+td.questionedThisRound {
+	color: green;
+}

@@ -2,6 +2,7 @@ import * as React from 'react';
 import './App.css';
 import shuffle from './shuffle';
 import * as uuid from 'uuid';
+import classnames from 'classnames'
 
 const NUMBER_OF_GUESTS = 25;
 const NUMBER_OF_AGENTS = 2;
@@ -189,6 +190,7 @@ class App extends React.Component<{}, State> {
 	}
 	render() {
 		const allSpaces = this.buildTable();
+		const selectedInformation = this.state.selected && this.state.information.find(info => info.guest === this.state.selected);
 		return (
 			<>
 				<table>
@@ -199,7 +201,10 @@ class App extends React.Component<{}, State> {
 									<td
 										key={index}
 										onClick={col ? () => this.select(col) : undefined}
-										className={this.state.selected === col ? 'selected' : ''}
+										className={classnames({
+											selected: this.state.selected === col,
+											questionedThisRound: this.state.information.find(info => info.guest === col)
+										})}
 									>
 										{col ? col.mask.substr(0, 1) : null}{col && col.type === 'agent' ? 'a' : ''}
 									</td>
@@ -210,8 +215,12 @@ class App extends React.Component<{}, State> {
 				</table>
 				{this.state.selected && (
 					<>
-						<button onClick={() => this.investigate(false)}>Investigate (failed Insight)</button>
-						<button onClick={() => this.investigate(true)}>Investigate (successful Insight)</button>
+						{selectedInformation ? selectedInformation.information : (
+							<>
+								<button onClick={() => this.investigate(false)}>Investigate (failed Insight)</button>
+								<button onClick={() => this.investigate(true)}>Investigate (successful Insight)</button>
+							</>
+						)}
 					</>
 				)}
 				<button onClick={this.nextTurn}>Next turn</button>
