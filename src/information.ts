@@ -39,6 +39,14 @@ const change = (mask: string) => randomAnswer([
 	`A Zhent agent changed his ${mask} mask into something else not long ago, Quick! Get him!`
 ])
 
+const wrongfulAccusation = () => randomAnswer([
+	'WHAT ARE YOU DOING? I\'m calling the city watch!',
+	'Get your hands off me! Who do you think you are?',
+	'A man can\'t have some fun without being harassed! I hate this city!',
+	'Go back to your hideout you thug!',
+	'Damn the Xanathar! Damn the Zhentarim! Damn this whole godforsaken city.'
+])
+
 function randomAnswer(answers: string[]): string {
 	const rnd = Math.floor(Math.random() * answers.length);
 	return answers[rnd];
@@ -49,5 +57,6 @@ export {
 	tooFarAway,
 	nextTo,
 	closeBy,
-	change
+	change,
+	wrongfulAccusation
 }

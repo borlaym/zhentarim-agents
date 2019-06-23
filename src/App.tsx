@@ -3,12 +3,12 @@ import './App.css';
 import shuffle from './shuffle';
 import * as uuid from 'uuid';
 import classnames from 'classnames'
-import { converted, tooFarAway, nextTo, closeBy, change } from './information';
+import { converted, tooFarAway, nextTo, closeBy, change, wrongfulAccusation } from './information';
 
 const NUMBER_OF_GUESTS = 35;
 const NUMBER_OF_AGENTS = 3;
 const MAP_SIZE = 10;
-const STARTING_CONVERTED = 3;
+const STARTING_CONVERTED = 5;
 
 type GuestType = 'commoner' | 'agent';
 type Mask = 'bear' | 'rabbit' | 'fox';
@@ -53,14 +53,16 @@ type Turn = Guest[];
 type State = {
 	turns: Turn[],
 	selected: Guest | void,
-	information: Information[]
+	information: Information[],
+	wrongfulAccusations: number
 }
 
 class App extends React.Component<{}, State> {
 	state: State = {
 		turns: [],
 		selected: undefined,
-		information: []
+		information: [],
+		wrongfulAccusations: 0
 	}
 	componentWillMount() {
 		this.setState({
@@ -180,6 +182,27 @@ class App extends React.Component<{}, State> {
 			selected: guest
 		})
 	}
+	unmask = () => {
+		if (!this.state.selected) {
+			return;
+		}
+		if (this.state.selected.type === 'agent') {
+			alert('Eeek! I\'m compromised!');
+			return this.setState({
+				selected: undefined,
+				turns: [...this.state.turns.slice(0, this.state.turns.length - 1),
+				this.state.turns[this.state.turns.length - 1].filter(g => g !== this.state.selected)]
+			})
+		}
+
+		this.setState({
+			information: [...this.state.information, {
+				guest: this.state.selected,
+				information: wrongfulAccusation(),
+			}],
+			wrongfulAccusations: (this.state.wrongfulAccusations + 1)
+		})
+	}
 	investigate = (insightSuccess: boolean) => {
 		const guest = this.state.selected;
 		const currentTurn = this.state.turns[this.state.turns.length -1]
@@ -260,12 +283,19 @@ class App extends React.Component<{}, State> {
 								<>
 									<button onClick={() => this.investigate(false)}>Investigate (failed Insight)</button>
 									<button onClick={() => this.investigate(true)}>Investigate (successful Insight)</button>
+									<button onClick={this.unmask}>Unmask</button>
 								</>
 							) : null}
 					</div>
 					<footer>
 						<p>
+							Agents remaining: {currentTurn.filter(guest => guest.type === 'agent').length}
+						</p>
+						<p>
 							Converted people: {currentTurn.filter(guest => guest.converted).length}
+						</p>
+						<p>
+							Wrongful accusations: {this.state.wrongfulAccusations}
 						</p>
 						<button onClick={this.nextTurn}>Next turn</button>
 					</footer>
