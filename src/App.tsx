@@ -8,7 +8,8 @@ import { converted, tooFarAway, nextTo, closeBy, change, wrongfulAccusation } fr
 const NUMBER_OF_GUESTS = 35;
 const NUMBER_OF_AGENTS = 3;
 const MAP_SIZE = 10;
-const STARTING_CONVERTED = 5;
+const STARTING_CONVERTED = 3;
+const INFO_DISTANCE = 2;
 
 type GuestType = 'commoner' | 'agent';
 type Mask = 'bear' | 'rabbit' | 'fox';
@@ -168,7 +169,9 @@ class App extends React.Component<{}, State> {
 			const uncovertedCommoners = newTurn.filter(guest => guest.type === 'commoner' && !guest.converted);
 			const nextTo = uncovertedCommoners.filter(commoner => agent.position.distanceTo(commoner.position) === 1);
 			if (nextTo.length > 0) {
-				shuffle(nextTo)[0].converted = true;
+				if (Math.random() > 0.7) {
+					shuffle(nextTo)[0].converted = true;
+				}
 			}
 		})
 		this.setState({
@@ -195,6 +198,21 @@ class App extends React.Component<{}, State> {
 			})
 		}
 
+		const alreadyInvestigated = this.state.information.find(info => info.guest === this.state.selected);
+		if (alreadyInvestigated) {
+			return this.setState({
+				information: this.state.information.map(info => {
+					if (info === alreadyInvestigated) {
+						return {
+							...info,
+							information: wrongfulAccusation()
+						}
+					}
+					return info
+				}),
+				wrongfulAccusations: (this.state.wrongfulAccusations + 1)
+			})
+		}
 		this.setState({
 			information: [...this.state.information, {
 				guest: this.state.selected,
@@ -203,29 +221,24 @@ class App extends React.Component<{}, State> {
 			wrongfulAccusations: (this.state.wrongfulAccusations + 1)
 		})
 	}
-	investigate = (insightSuccess: boolean) => {
+	investigate = () => {
 		const guest = this.state.selected;
 		const currentTurn = this.state.turns[this.state.turns.length -1]
 		if (!guest) {
 			return;
 		}
-		if (insightSuccess && guest.type === 'agent') {
-			alert('Eeek! I\'m compromised!');
-			return this.setState({
-				turns: [...this.state.turns.slice(0, this.state.turns.length - 1),
-					this.state.turns[this.state.turns.length - 1].filter(g => g !== guest)]
-			})
-		}
 		let info = 'No info';
 		const random = Math.random() * 100;
-		if (guest.converted) {
+		if (guest.type === 'agent') {
+			info = shuffle([tooFarAway(), nextTo(), closeBy(), closeBy(), tooFarAway()])[0];
+		} else if (guest.converted) {
 			info = converted();
 		} else if (this.state.turns.length === 1 || random < 60) {
 			// Distance to agent
 			const agents = currentTurn.filter(guest => guest.type === 'agent');
 			const distances = agents.map(agent => guest.position.distanceTo(agent.position))
 			const targetAgentDistance = Math.max(Math.min(...distances), 0)
-			if (targetAgentDistance > 3) {
+			if (targetAgentDistance > INFO_DISTANCE) {
 				info = tooFarAway()
 			} else if (targetAgentDistance < 2 && guest.position.neighboring(currentTurn) > 1 ) {
 				info = nextTo()
@@ -237,7 +250,7 @@ class App extends React.Component<{}, State> {
 			const agents = previousRound.filter(guest => guest.type === 'agent');
 			const distances = agents.map(agent => guest.position.distanceTo(agent.position))
 			const targetAgentDistance = Math.max(Math.min(...distances), 0)
-			if (targetAgentDistance > 3) {
+			if (targetAgentDistance > INFO_DISTANCE) {
 				info = tooFarAway();
 			} else {
 				const closestAgent = agents[distances.indexOf(targetAgentDistance)];
@@ -283,13 +296,8 @@ class App extends React.Component<{}, State> {
 					<div>
 						{this.state.selected && selectedInformation ? (
 								<p className="quote">"{selectedInformation.information}"</p>
-							) : this.state.selected ? (
-								<>
-									<button onClick={() => this.investigate(false)}>Investigate (failed Insight)</button>
-									<button onClick={() => this.investigate(true)}>Investigate (successful Insight)</button>
-									<button onClick={this.unmask}>Unmask</button>
-								</>
-							) : null}
+							) : this.state.selected ? <button onClick={this.investigate}>Investigate</button>  : null}
+						{this.state.selected && <button onClick={this.unmask}>Unmask</button>}
 					</div>
 					<footer>
 						<p>
