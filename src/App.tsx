@@ -7,10 +7,11 @@ import classnames from 'classnames'
 const NUMBER_OF_GUESTS = 25;
 const NUMBER_OF_AGENTS = 2;
 const MAP_SIZE = 10;
+const STARTING_CONVERTED = 3;
 
 type GuestType = 'commoner' | 'agent';
-type Mask = 'rabbit' | 'mouse' | 'fox';
-const masks: Mask[] = ['rabbit', 'mouse', 'fox'];
+type Mask = 'bear' | 'rabbit' | 'fox';
+const masks: Mask[] = ['bear', 'rabbit', 'fox'];
 type Guest = {
 	id: string,
 	type: GuestType,
@@ -96,6 +97,12 @@ class App extends React.Component<{}, State> {
 				converted: false,
 				position: pos
 			})
+		}
+		// Starting converted
+		for (let c = 0; c < STARTING_CONVERTED; c++) {
+			const unconverted = guests.filter(g => !g.converted);
+			const target = shuffle(unconverted)[0]
+			guests[unconverted.indexOf(target)].converted = true;
 		}
 		return guests;
 	}
@@ -223,7 +230,7 @@ class App extends React.Component<{}, State> {
 											converted: col && col.converted
 										})}
 									>
-										{col ? col.mask.substr(0, 1) : null}{col && col.type === 'agent' ? 'a' : ''}
+										{col && <img src={`${col.mask}.png`} />}
 									</td>
 								))}
 							</tr>
