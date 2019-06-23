@@ -4,4 +4,9 @@ td {
 	border: 1px solid black;
 	text-align: center;
 	text-transform: uppercase;
+	cursor: pointer;
+}
+
+td.selected {
+	border: 1px solid red;
 }

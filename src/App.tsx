@@ -18,6 +18,11 @@ type Guest = {
 	position: Position
 }
 
+type Information = {
+	guest: Guest,
+	information: string
+}
+
 class Position {
 	row: number;
 	col: number;
@@ -31,18 +36,25 @@ class Position {
 	equals(pos: Position): boolean {
 		return this.row === pos.row && this.col === pos.col;
 	}
+	distanceTo(pos: Position): number {
+		return Math.max(Math.abs(pos.row - this.row), Math.abs(pos.col - this.col))
+	}
 
 }
 
 type Turn = Guest[];
 
 type State = {
-	turns: Turn[]
+	turns: Turn[],
+	selected: Guest | void,
+	information: Information[]
 }
 
-class App extends React.Component {
-	state = {
-		turns: []
+class App extends React.Component<{}, State> {
+	state: State = {
+		turns: [],
+		selected: undefined,
+		information: []
 	}
 	componentWillMount() {
 		this.setState({
@@ -133,7 +145,46 @@ class App extends React.Component {
 			}
 		})
 		this.setState({
-			turns: [...this.state.turns, newTurn]
+			turns: [...this.state.turns, newTurn],
+			selected: undefined
+		})
+	}
+	select = (guest: Guest) => {
+		this.setState({
+			selected: guest
+		})
+	}
+	investigate = (insightSuccess: boolean) => {
+		const guest = this.state.selected;
+		const currentTurn = this.state.turns[this.state.turns.length -1]
+		if (!guest) {
+			return;
+		}
+		if (insightSuccess && guest.type === 'agent') {
+			return alert('Found agent')
+		}
+		let info = 'No info';
+		const random = Math.random() * 100;
+		if (random < 70) {
+			// Distance to agent
+			const agents = currentTurn.filter(guest => guest.type === 'agent');
+			const distances = agents.map(agent => guest.position.distanceTo(agent.position))
+			const targetAgentDistance = Math.max(Math.min(...distances), 0)
+			if (targetAgentDistance > 3) {
+				info = 'Zhentarim? Never heard of them.'
+			} else if (targetAgentDistance < 2) {
+				info = 'This guy next to me is super suspicious!'
+			} else {
+				info = 'I think I saw a man with a snake tattoo not too far away!'
+			}
+		} else {
+			info = 'Other info'
+		}
+		this.setState({
+			information: [...this.state.information, {
+				guest,
+				information: info
+			}]
 		})
 	}
 	render() {
@@ -145,14 +196,24 @@ class App extends React.Component {
 						{allSpaces.map((row: Array<(Guest | null)>, index) => (
 							<tr key={index}>
 								{row.map((col: Guest | null, index) => (
-									<td key={index}>
-										{col ? col.mask.substr(0, 1) : null}
+									<td
+										key={index}
+										onClick={col ? () => this.select(col) : undefined}
+										className={this.state.selected === col ? 'selected' : ''}
+									>
+										{col ? col.mask.substr(0, 1) : null}{col && col.type === 'agent' ? 'a' : ''}
 									</td>
 								))}
 							</tr>
 						))}
 					</tbody>
 				</table>
+				{this.state.selected && (
+					<>
+						<button onClick={() => this.investigate(false)}>Investigate (failed Insight)</button>
+						<button onClick={() => this.investigate(true)}>Investigate (successful Insight)</button>
+					</>
+				)}
 				<button onClick={this.nextTurn}>Next turn</button>
 			</>
 		)
