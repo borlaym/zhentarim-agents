@@ -51,28 +51,37 @@ class App extends React.Component {
 	}
 	createInitialState(): Turn {
 		const guests: Turn = []
-		const availablePositions: Position[] = [];
+		const notShuffledAvailablePositions: Position[] = [];
 		for (let row = 0; row < MAP_SIZE; row++) {
 			for (let col = 0; col < MAP_SIZE; col++) {
-				availablePositions.push(new Position(row, col));
+				notShuffledAvailablePositions.push(new Position(row, col));
 			}
 		}
+		const availablePositions = shuffle(notShuffledAvailablePositions);
 		for (let i = 0; i < NUMBER_OF_GUESTS; i++) {
+			const pos = availablePositions.pop();
+			if (!pos) {
+				throw Error()
+			}
 			guests.push({
 				id: uuid.v4(),
 				type: 'commoner',
 				mask: shuffle<Mask>(masks)[0],
 				converted: false,
-				position: shuffle(availablePositions).pop() || new Position(-1, -1)
+				position: pos
 			})
 		}
 		for (let i = 0; i < NUMBER_OF_AGENTS; i++) {
+			const pos = availablePositions.pop();
+			if (!pos) {
+				throw Error()
+			}
 			guests.push({
 				id: uuid.v4(),
 				type: 'agent',
 				mask: shuffle<Mask>(masks)[0],
 				converted: false,
-				position: shuffle(availablePositions).pop() || new Position(-1, -1)
+				position: pos
 			})
 		}
 		return guests;
@@ -117,6 +126,7 @@ class App extends React.Component {
 			do {
 				newPosition = shuffle(possiblePositions)[0]
 			} while (isOccupied(newPosition));
+			occupiedSpaces.push(newPosition)
 			return {
 				...guest,
 				position: newPosition
