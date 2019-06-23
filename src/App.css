@@ -1,3 +1,18 @@
+table {
+	margin-right: 30px;
+}
+
+.container {
+	display: flex;
+	padding: 30px;
+}
+
+.tools {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
 td {
 	width: 55px;
 	height: 55px;
@@ -14,13 +29,20 @@ td img {
 	}
 
 td.selected {
-	border: 1px solid red;
+	background-color: lightgray;
 }
 
 td.questionedThisRound {
 	background-color: gray;
 }
 
-td.converted {
-	font-weight: bold;
+button {
+	padding: 10px;
+	font-size: 18px;
+	margin-bottom: 5px;
+	display: block;
+}
+
+td.agent {
+	border-color: red;
 }

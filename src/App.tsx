@@ -215,7 +215,7 @@ class App extends React.Component<{}, State> {
 		const selectedInformation = this.state.selected && this.state.information.find(info => info.guest === this.state.selected);
 		const currentTurn = this.state.turns[this.state.turns.length - 1];
 		return (
-			<>
+			<div className="container">
 				<table>
 					<tbody>
 						{allSpaces.map((row: Array<(Guest | null)>, index) => (
@@ -227,7 +227,8 @@ class App extends React.Component<{}, State> {
 										className={classnames({
 											selected: this.state.selected === col,
 											questionedThisRound: this.state.information.find(info => info.guest === col),
-											converted: col && col.converted
+											converted: col && col.converted,
+											agent: col && col.type === 'agent'
 										})}
 									>
 										{col && <img src={`${col.mask}.png`} />}
@@ -237,22 +238,24 @@ class App extends React.Component<{}, State> {
 						))}
 					</tbody>
 				</table>
-				{this.state.selected && (
-					<>
-						{selectedInformation ? selectedInformation.information : (
-							<>
-								<button onClick={() => this.investigate(false)}>Investigate (failed Insight)</button>
-								<button onClick={() => this.investigate(true)}>Investigate (successful Insight)</button>
-							</>
-						)}
-					</>
-				)}
-				<div>
-					Converted people: {currentTurn.filter(guest => guest.converted).length}
+				<div className="tools">
+					<div>
+						{this.state.selected && selectedInformation ? selectedInformation.information : this.state.selected ? (
+								<>
+									<button onClick={() => this.investigate(false)}>Investigate (failed Insight)</button>
+									<button onClick={() => this.investigate(true)}>Investigate (successful Insight)</button>
+								</>
+							) : null}
+					</div>
+					<footer>
+						<p>
+							Converted people: {currentTurn.filter(guest => guest.converted).length}
+						</p>
+						<button onClick={this.nextTurn}>Next turn</button>
+					</footer>
 				</div>
-				<button onClick={this.nextTurn}>Next turn</button>
 
-			</>
+			</div>
 		)
 	}
 }
