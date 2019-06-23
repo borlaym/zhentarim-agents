@@ -14,3 +14,7 @@ td.selected {
 td.questionedThisRound {
 	color: green;
 }
+
+td.converted {
+	font-weight: bold;
+}

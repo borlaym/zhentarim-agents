@@ -146,6 +146,15 @@ class App extends React.Component<{}, State> {
 				mask: guest.type === 'agent' ? shuffle(masks.filter(mask => mask !== guest.mask))[0] : guest.mask
 			}
 		})
+		// The agents convert people
+		const agents = newTurn.filter(guest => guest.type === 'agent');
+		agents.forEach(agent => {
+			const uncovertedCommoners = newTurn.filter(guest => guest.type === 'commoner' && !guest.converted);
+			const nextTo = uncovertedCommoners.filter(commoner => agent.position.distanceTo(commoner.position) === 1);
+			if (nextTo.length > 0) {
+				shuffle(nextTo)[0].converted = true;
+			}
+		})
 		this.setState({
 			turns: [...this.state.turns, newTurn],
 			selected: undefined
@@ -167,7 +176,9 @@ class App extends React.Component<{}, State> {
 		}
 		let info = 'No info';
 		const random = Math.random() * 100;
-		if (this.state.turns.length === 1 || random < 70) {
+		if (guest.converted) {
+			info = 'I\'m not telling you anything. They promised me good coin.';
+		} else if (this.state.turns.length === 1 || random < 40) {
 			// Distance to agent
 			const agents = currentTurn.filter(guest => guest.type === 'agent');
 			const distances = agents.map(agent => guest.position.distanceTo(agent.position))
@@ -195,6 +206,7 @@ class App extends React.Component<{}, State> {
 	render() {
 		const allSpaces = this.buildTable();
 		const selectedInformation = this.state.selected && this.state.information.find(info => info.guest === this.state.selected);
+		const currentTurn = this.state.turns[this.state.turns.length - 1];
 		return (
 			<>
 				<table>
@@ -207,7 +219,8 @@ class App extends React.Component<{}, State> {
 										onClick={col ? () => this.select(col) : undefined}
 										className={classnames({
 											selected: this.state.selected === col,
-											questionedThisRound: this.state.information.find(info => info.guest === col)
+											questionedThisRound: this.state.information.find(info => info.guest === col),
+											converted: col && col.converted
 										})}
 									>
 										{col ? col.mask.substr(0, 1) : null}{col && col.type === 'agent' ? 'a' : ''}
@@ -227,7 +240,11 @@ class App extends React.Component<{}, State> {
 						)}
 					</>
 				)}
+				<div>
+					Converted people: {currentTurn.filter(guest => guest.converted).length}
+				</div>
 				<button onClick={this.nextTurn}>Next turn</button>
+
 			</>
 		)
 	}
