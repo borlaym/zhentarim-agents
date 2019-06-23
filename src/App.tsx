@@ -10,6 +10,8 @@ const NUMBER_OF_AGENTS = 3;
 const MAP_SIZE = 10;
 const STARTING_CONVERTED = 3;
 const INFO_DISTANCE = 2;
+const CONVERSION_RATE = 0.6; // What percentage the agents have to convert a bystander
+const MOVE_CHANCE = 0.5; // What percentage the commoners have to move on a turn
 
 type GuestType = 'commoner' | 'agent';
 type Mask = 'bear' | 'rabbit' | 'fox';
@@ -127,7 +129,11 @@ class App extends React.Component<{}, State> {
 			throw Error()
 		}
 		turn.forEach((guest: Guest) => {
-			table[guest.position.row][guest.position.col] = guest;
+			if (!table[guest.position.row][guest.position.col]) {
+				table[guest.position.row][guest.position.col] = guest;
+			} else {
+				console.log('error: position duplicate')
+			}
 		})
 		return table;
 	}
@@ -135,10 +141,11 @@ class App extends React.Component<{}, State> {
 		const currentTurn: Turn = this.state.turns[this.state.turns.length - 1];
 		const occupiedSpaces: Position[] = [];
 		const isOccupied = (pos: Position): boolean => {
-			return !!occupiedSpaces.find(space => space.equals(pos));
+			return Boolean(occupiedSpaces.find(space => space.equals(pos)));
 		}
-		const newTurn = currentTurn.map((guest: Guest, index, arr) => {
-			if (guest.type !== 'agent' && Math.random() < 0.5) {
+		const newTurn = currentTurn.map((guest: Guest) => {
+			if (guest.type !== 'agent' && Math.random() < MOVE_CHANCE && !isOccupied(guest.position)) {
+				occupiedSpaces.push(guest.position)
 				return guest;
 			}
 			const oldPosition = guest.position;
@@ -147,15 +154,13 @@ class App extends React.Component<{}, State> {
 				oldPosition.copy(0, -1), /* current pos */ oldPosition.copy(0, 1),
 				oldPosition.copy(1, -1), oldPosition.copy(1, 0), oldPosition.copy(1, 1),
 			].filter(pos => {
-				return !pos.equals(oldPosition) && pos.row > -1 && pos.col > -1 && pos.row < MAP_SIZE && pos.col < MAP_SIZE
+				return !pos.equals(oldPosition) && pos.row > -1 && pos.col > -1 && pos.row < MAP_SIZE && pos.col < MAP_SIZE && !isOccupied(pos)
 			})
 			if (possiblePositions.length === 0) {
+				occupiedSpaces.push(guest.position)
 				return guest;
 			}
-			let newPosition: Position = guest.position.copy(0, 0);
-			do {
-				newPosition = shuffle(possiblePositions)[0]
-			} while (isOccupied(newPosition));
+			const newPosition: Position = shuffle(possiblePositions)[0]
 			occupiedSpaces.push(newPosition)
 			return {
 				...guest,
@@ -169,7 +174,7 @@ class App extends React.Component<{}, State> {
 			const uncovertedCommoners = newTurn.filter(guest => guest.type === 'commoner' && !guest.converted);
 			const nextTo = uncovertedCommoners.filter(commoner => agent.position.distanceTo(commoner.position) === 1);
 			if (nextTo.length > 0) {
-				if (Math.random() > 0.7) {
+				if (Math.random() < CONVERSION_RATE) {
 					shuffle(nextTo)[0].converted = true;
 				}
 			}
@@ -240,7 +245,7 @@ class App extends React.Component<{}, State> {
 			const targetAgentDistance = Math.max(Math.min(...distances), 0)
 			if (targetAgentDistance > INFO_DISTANCE) {
 				info = tooFarAway()
-			} else if (targetAgentDistance < 2 && guest.position.neighboring(currentTurn) > 1 ) {
+			} else if (targetAgentDistance < 2 && guest.position.neighboring(currentTurn) > 1 && Math.random() < 0.7) {
 				info = nextTo()
 			} else {
 				info = closeBy()
@@ -250,7 +255,7 @@ class App extends React.Component<{}, State> {
 			const agents = previousRound.filter(guest => guest.type === 'agent');
 			const distances = agents.map(agent => guest.position.distanceTo(agent.position))
 			const targetAgentDistance = Math.max(Math.min(...distances), 0)
-			if (targetAgentDistance > INFO_DISTANCE) {
+			if (targetAgentDistance > INFO_DISTANCE + 1) {
 				info = tooFarAway();
 			} else {
 				const closestAgent = agents[distances.indexOf(targetAgentDistance)];
