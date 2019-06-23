@@ -5,7 +5,10 @@ const converted = () => randomAnswer([
 	'Why would I tell you? Where were YOU when I needed help?',
 	'I pledged my life to the Zhentarim. I\'m not helping you.',
 	'Yeah, they recruited me. Here\'s a tip free of charge: you smell like an arse.',
-	'Get lost! The Zhentarim will take care of me.'
+	'Get lost! The Zhentarim will take care of me.',
+	'I changed my allegiances from the Xanathar to the Zhentarim. But to YOU, I tell nothing.',
+	'Leave me be! Maybe I should let my new bosses know someone is looking for them.',
+	'I had no choice but to join up with the Zhentarim. Look at me, I haven\'t eaten in days. It would be wrong to rat them out now.'
 ]);
 
 const tooFarAway = () => randomAnswer([
@@ -20,8 +23,7 @@ const nextTo = () => randomAnswer([
 	'This guy next to me is super suspicious!',
 	'I just bumped into someone who fits that description!',
 	'Psst! He\'s RIGHT HERE! You would do the Xanathar... ehm, I mean the people, a great service if you killed him!',
-	'See that guy behind my shoulders? Super shady!',
-	''
+	'See that guy behind my shoulders? Super shady!'
 ]);
 
 const closeBy = () => randomAnswer([

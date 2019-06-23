@@ -108,7 +108,7 @@ class App extends React.Component<{}, State> {
 		for (let c = 0; c < STARTING_CONVERTED; c++) {
 			const unconverted = guests.filter(g => !g.converted);
 			const target = shuffle(unconverted)[0]
-			guests[unconverted.indexOf(target)].converted = true;
+			guests[guests.indexOf(target)].converted = true;
 		}
 		return guests;
 	}
@@ -237,8 +237,12 @@ class App extends React.Component<{}, State> {
 			const agents = previousRound.filter(guest => guest.type === 'agent');
 			const distances = agents.map(agent => guest.position.distanceTo(agent.position))
 			const targetAgentDistance = Math.max(Math.min(...distances), 0)
-			const closestAgent = agents[distances.indexOf(targetAgentDistance)];
-			info = change(closestAgent.mask)
+			if (targetAgentDistance > 3) {
+				info = tooFarAway();
+			} else {
+				const closestAgent = agents[distances.indexOf(targetAgentDistance)];
+				info = change(closestAgent.mask)
+			}
 		}
 		this.setState({
 			information: [...this.state.information, {
