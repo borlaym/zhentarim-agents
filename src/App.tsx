@@ -212,8 +212,10 @@ class App extends React.Component<{}, State> {
 		} else {
 			const previousRound = this.state.turns[this.state.turns.length -2];
 			const agents = previousRound.filter(guest => guest.type === 'agent');
-			const targetAgent = shuffle(agents)[0]
-			info = change(targetAgent.mask)
+			const distances = agents.map(agent => guest.position.distanceTo(agent.position))
+			const targetAgentDistance = Math.max(Math.min(...distances), 0)
+			const closestAgent = agents[distances.indexOf(targetAgentDistance)];
+			info = change(closestAgent.mask)
 		}
 		this.setState({
 			information: [...this.state.information, {
