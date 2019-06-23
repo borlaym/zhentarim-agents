@@ -289,15 +289,15 @@ class App extends React.Component<{}, State> {
 					</div>
 					<footer>
 						<p>
-							Agents remaining: {currentTurn.filter(guest => guest.type === 'agent').length}
+							Zhentarim agents remaining: {currentTurn.filter(guest => guest.type === 'agent').length}
 						</p>
 						<p>
-							Converted people: {currentTurn.filter(guest => guest.converted).length}
+							Recruited townsfolk: {currentTurn.filter(guest => guest.converted).length}
 						</p>
 						<p>
 							Wrongful accusations: {this.state.wrongfulAccusations}
 						</p>
-						<button onClick={this.nextTurn}>Next turn</button>
+						<button onClick={this.nextTurn}>Next round</button>
 					</footer>
 				</div>
 
