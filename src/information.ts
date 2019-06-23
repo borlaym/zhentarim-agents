@@ -8,7 +8,8 @@ const converted = () => randomAnswer([
 	'Get lost! The Zhentarim will take care of me.',
 	'I changed my allegiances from the Xanathar to the Zhentarim. But to YOU, I tell nothing.',
 	'Leave me be! Maybe I should let my new bosses know someone is looking for them.',
-	'I had no choice but to join up with the Zhentarim. Look at me, I haven\'t eaten in days. It would be wrong to rat them out now.'
+	'I had no choice but to join up with the Zhentarim. Look at me, I haven\'t eaten in days. It would be wrong to rat them out now.',
+	'You are trying to interfere with their plans? I am proudly among their ranks now, so how about I give you a right thrashing instead?'
 ]);
 
 const tooFarAway = () => randomAnswer([
@@ -16,7 +17,9 @@ const tooFarAway = () => randomAnswer([
 	'I haven\'t seen any shady people, no, but would you like to dance?',
 	'Hic! Tellya the truf I\'m farily drunk.',
 	'Haven\'t seen no agent, now leave me be!',
-	'An agent? I\'m not an agent of Xanathar! Oh, you were asking about the Zhentarim? Haven\'t seen one, no.'
+	'An agent? I\'m not an agent of Xanathar! Oh, you were asking about the Zhentarim? Haven\'t seen one, no.',
+	'I\'ve been looking at this girl all night, I haven\'t seen no shady figures, no.',
+	'I think I saw one, but he was on the other side of the room.'
 ])
 
 const nextTo = () => randomAnswer([
