@@ -5,8 +5,8 @@ import * as uuid from 'uuid';
 import classnames from 'classnames'
 import { converted, tooFarAway, nextTo, closeBy, change } from './information';
 
-const NUMBER_OF_GUESTS = 25;
-const NUMBER_OF_AGENTS = 2;
+const NUMBER_OF_GUESTS = 35;
+const NUMBER_OF_AGENTS = 3;
 const MAP_SIZE = 10;
 const STARTING_CONVERTED = 3;
 
@@ -252,7 +252,9 @@ class App extends React.Component<{}, State> {
 				</table>
 				<div className="tools">
 					<div>
-						{this.state.selected && selectedInformation ? selectedInformation.information : this.state.selected ? (
+						{this.state.selected && selectedInformation ? (
+								<p className="quote">"{selectedInformation.information}"</p>
+							) : this.state.selected ? (
 								<>
 									<button onClick={() => this.investigate(false)}>Investigate (failed Insight)</button>
 									<button onClick={() => this.investigate(true)}>Investigate (successful Insight)</button>
