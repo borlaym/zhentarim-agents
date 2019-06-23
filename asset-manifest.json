@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/zhentarim-agents/static/css/main.30391f4f.chunk.css",
+    "main.js": "/zhentarim-agents/static/js/main.31330bcd.chunk.js",
+    "main.js.map": "/zhentarim-agents/static/js/main.31330bcd.chunk.js.map",
+    "runtime~main.js": "/zhentarim-agents/static/js/runtime~main.b64ce0ec.js",
+    "runtime~main.js.map": "/zhentarim-agents/static/js/runtime~main.b64ce0ec.js.map",
+    "static/js/2.78fa5475.chunk.js": "/zhentarim-agents/static/js/2.78fa5475.chunk.js",
+    "static/js/2.78fa5475.chunk.js.map": "/zhentarim-agents/static/js/2.78fa5475.chunk.js.map",
+    "index.html": "/zhentarim-agents/index.html",
+    "precache-manifest.b85812b00fd2effffbc392fc8fba9128.js": "/zhentarim-agents/precache-manifest.b85812b00fd2effffbc392fc8fba9128.js",
+    "service-worker.js": "/zhentarim-agents/service-worker.js",
+    "static/css/main.30391f4f.chunk.css.map": "/zhentarim-agents/static/css/main.30391f4f.chunk.css.map"
+  }
+}
