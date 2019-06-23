@@ -110,6 +110,9 @@ class App extends React.Component {
 			].filter(pos => {
 				return !pos.equals(oldPosition) && pos.row > -1 && pos.col > -1 && pos.row < MAP_SIZE && pos.col < MAP_SIZE
 			})
+			if (possiblePositions.length === 0) {
+				return guest;
+			}
 			let newPosition: Position = guest.position.copy(0, 0);
 			do {
 				newPosition = shuffle(possiblePositions)[0]
