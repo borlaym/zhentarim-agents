@@ -142,7 +142,8 @@ class App extends React.Component<{}, State> {
 			occupiedSpaces.push(newPosition)
 			return {
 				...guest,
-				position: newPosition
+				position: newPosition,
+				mask: guest.type === 'agent' ? shuffle(masks.filter(mask => mask !== guest.mask))[0] : guest.mask
 			}
 		})
 		this.setState({
@@ -166,7 +167,7 @@ class App extends React.Component<{}, State> {
 		}
 		let info = 'No info';
 		const random = Math.random() * 100;
-		if (random < 70) {
+		if (this.state.turns.length === 1 || random < 70) {
 			// Distance to agent
 			const agents = currentTurn.filter(guest => guest.type === 'agent');
 			const distances = agents.map(agent => guest.position.distanceTo(agent.position))
@@ -179,7 +180,10 @@ class App extends React.Component<{}, State> {
 				info = 'I think I saw a man with a snake tattoo not too far away!'
 			}
 		} else {
-			info = 'Other info'
+			const previousRound = this.state.turns[this.state.turns.length -2];
+			const agents = previousRound.filter(guest => guest.type === 'agent');
+			const targetAgent = shuffle(agents)[0]
+			info = `I saw a suspicious man change from a ${targetAgent.mask} mask not too long ago!`;
 		}
 		this.setState({
 			information: [...this.state.information, {
