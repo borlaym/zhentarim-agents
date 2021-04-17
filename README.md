@@ -1,4 +1,5 @@
-Digital aid for a custom quest in the D&D adventure Waterdeep: Dragon Heist
+Digital aid for a custom quest in the D&D adventure Waterdeep: Dragon Heist.
+The adventurers were searching for agents of the Zhentarim in a party where everyone was wearing animal masks.
 
 https://borlaym.github.io/zhentarim-agents/
 
